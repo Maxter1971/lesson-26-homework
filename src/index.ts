@@ -1,9 +1,9 @@
-import {
-  getUserOrderStates,
-  getOrderState,
-  omit,
-  filterOnlyInitialAndInWorkOrder,
-} from "./task";
+import { getUserOrderStates } from "./1";
+import { getOrderState } from "./2";
+
+import { omit } from "./3";
+
+import { filterOnlyInitialAndInWorkOrder } from "./4";
 
 console.log(getUserOrderStates(["initial", "inWork", "buyingSupplies"]));
 console.log(
