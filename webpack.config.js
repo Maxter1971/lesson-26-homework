@@ -1,6 +1,7 @@
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const { resolve } = require("path");
 const webpack = require("webpack");
 
@@ -12,6 +13,9 @@ module.exports = {
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    fallback: {
+      fs: require.resolve("browserify-fs"),
+    },
   },
   output: {
     path: resolve(__dirname, "dist"),
@@ -33,6 +37,7 @@ module.exports = {
       $: require.resolve("jquery"),
       jQuery: require.resolve("jquery"),
     }),
+    new NodePolyfillPlugin(),
   ],
   optimization: {
     minimizer: [`...`, new CssMinimizerPlugin()],
