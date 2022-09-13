@@ -1,9 +1,9 @@
 import { IRecord, Tasks } from "./calendar";
 
 describe("calendar localstorage tests", () => {
-  it("calendar localstorage tests",  () => {
+  it("calendar localstorage tests", () => {
     localStorage.clear();
-    const calendar = new Tasks.Calendar(localStorage,'calendar');
+    const calendar = new Tasks.Calendar(localStorage, "calendar");
     expect(calendar).toBeDefined();
     expect(calendar).toBeInstanceOf(Object);
     let createRecord = calendar.createRecord({
@@ -31,7 +31,7 @@ describe("calendar localstorage tests", () => {
 
     const data1: IRecord[] = calendar.readAll();
 
-    const calendar1 = new Tasks.Calendar(localStorage,'calendary');
+    const calendar1 = new Tasks.Calendar(localStorage, "calendary");
     createRecord = calendar1.createRecord({
       id: 0,
       toDo: "Task0",
@@ -39,13 +39,12 @@ describe("calendar localstorage tests", () => {
       tag: "Tasks",
       date: "31.08.2022",
     });
-    
+
     const data11: IRecord[] = calendar1.readAll();
 
     expect(data1.length).toBe(2);
     expect(data1[1].id).toBe(1);
     expect(data11.length).toBe(1);
-
 
     createRecord = calendar.updateRecord({
       id: 1,
@@ -79,12 +78,7 @@ describe("calendar localstorage tests", () => {
       date: "31.08.2022",
     });
 
-    const findRecords = calendar.filterRecords(
-      "Task0",
-      "Progress",
-      "",
-      ""
-    );
+    const findRecords = calendar.filterRecords("Task0", "Progress", "", "");
     expect(findRecords.length).toBe(1);
     expect(findRecords[0].id).toBe(0);
 
@@ -97,6 +91,5 @@ describe("calendar localstorage tests", () => {
     const data4: IRecord[] = calendar.readAll();
     expect(data4.length).toBe(0);
     expect(data12.length).toBe(1);
-
-  });  
+  });
 });

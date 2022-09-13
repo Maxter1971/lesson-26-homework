@@ -8,7 +8,7 @@ export interface IRecord {
 
 export interface iCalendar {
   localStorage: Storage;
-  storageName:string;
+  storageName: string;
   createRecord: (record: IRecord) => boolean;
   updateRecord: (record: IRecord) => boolean;
   readRecord: (id: number) => IRecord | undefined;
@@ -26,26 +26,27 @@ export interface iCalendar {
 export namespace Tasks {
   export class Calendar implements iCalendar {
     localStorage: Storage;
-    
-    storageName:string;
 
-    constructor(localStorage: Storage,storageName:string) {
+    storageName: string;
+
+    constructor(localStorage: Storage, storageName: string) {
       this.localStorage = localStorage;
-      this.storageName = storageName;    
+      this.storageName = storageName;
     }
 
     public createRecord(record: IRecord) {
       let res = false;
       try {
-        const storageItem =
-         this.localStorage.
-         getItem(this.storageName.concat('_',record.id.toString()));
-         if (storageItem === null)
-         {
-          this.localStorage.setItem(this.storageName
-            .concat('_',record.id.toString()), JSON.stringify(record));
-            res = true;
-         }      
+        const storageItem = this.localStorage.getItem(
+          this.storageName.concat("_", record.id.toString())
+        );
+        if (storageItem === null) {
+          this.localStorage.setItem(
+            this.storageName.concat("_", record.id.toString()),
+            JSON.stringify(record)
+          );
+          res = true;
+        }
 
         return res;
       } catch (error) {
@@ -55,16 +56,17 @@ export namespace Tasks {
 
     public updateRecord(record: IRecord) {
       let res = false;
-      try {        
-        const storageItem =
-         this.localStorage.
-         getItem(this.storageName.concat('_',record.id.toString()));
-         if (storageItem !== null)
-         {
-          this.localStorage.setItem(this.storageName
-            .concat('_',record.id.toString()), JSON.stringify(record));
-            res = true;
-         }      
+      try {
+        const storageItem = this.localStorage.getItem(
+          this.storageName.concat("_", record.id.toString())
+        );
+        if (storageItem !== null) {
+          this.localStorage.setItem(
+            this.storageName.concat("_", record.id.toString()),
+            JSON.stringify(record)
+          );
+          res = true;
+        }
 
         return res;
       } catch (error) {
@@ -75,17 +77,17 @@ export namespace Tasks {
     public deleteRecord(id: number) {
       let res = false;
       try {
-        const storageItem =
-         this.localStorage.
-         getItem(this.storageName.concat('_',id.toString()));
-         if (storageItem !== null)
-         {
+        const storageItem = this.localStorage.getItem(
+          this.storageName.concat("_", id.toString())
+        );
+        if (storageItem !== null) {
           console.log(storageItem);
 
-          this.localStorage.removeItem(this.storageName
-            .concat('_',id.toString()));
-            res = true;
-         }      
+          this.localStorage.removeItem(
+            this.storageName.concat("_", id.toString())
+          );
+          res = true;
+        }
 
         return res;
       } catch (error) {
@@ -96,11 +98,12 @@ export namespace Tasks {
     public deleteAllRecords() {
       try {
         const keys = Object.keys(this.localStorage);
-        const filterKeys = 
-        keys.filter(key => key.includes(this.storageName.concat('_'))===true);
+        const filterKeys = keys.filter(
+          (key) => key.includes(this.storageName.concat("_")) === true
+        );
         console.log(keys);
         console.log(filterKeys);
-        filterKeys.forEach(k => {
+        filterKeys.forEach((k) => {
           const storageItem = this.localStorage.getItem(k);
           if (storageItem !== null) {
             this.localStorage.removeItem(k);
@@ -117,11 +120,12 @@ export namespace Tasks {
       const values: IRecord[] = [];
 
       const keys = Object.keys(this.localStorage);
-      const filterKeys = 
-      keys.filter(key => key.includes(this.storageName.concat('_'))===true);
+      const filterKeys = keys.filter(
+        (key) => key.includes(this.storageName.concat("_")) === true
+      );
       console.log(keys);
       console.log(filterKeys);
-      filterKeys.forEach(k => {
+      filterKeys.forEach((k) => {
         const storageItem = this.localStorage.getItem(k);
         if (storageItem !== null) {
           const item: IRecord = JSON.parse(storageItem);
@@ -141,12 +145,12 @@ export namespace Tasks {
         date: "",
       };
 
-      const storageItem =
-      this.localStorage.
-      getItem(this.storageName.concat('_',id.toString()));
+      const storageItem = this.localStorage.getItem(
+        this.storageName.concat("_", id.toString())
+      );
       if (storageItem !== null) {
         findRecord = JSON.parse(storageItem);
-      }     
+      }
 
       return findRecord;
     }
@@ -160,9 +164,10 @@ export namespace Tasks {
       const values: IRecord[] = [];
 
       let keys = Object.keys(this.localStorage);
-      keys = keys.filter
-      (key => key.includes(this.storageName.concat('_'))===true);
-      keys.forEach(k => {
+      keys = keys.filter(
+        (key) => key.includes(this.storageName.concat("_")) === true
+      );
+      keys.forEach((k) => {
         let sourceStr = "";
         let targetStr = "";
         const storageItem = this.localStorage.getItem(k);
