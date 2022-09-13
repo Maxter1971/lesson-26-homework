@@ -7,6 +7,7 @@ import {
   Database,
   update,
   DatabaseReference,
+  DataSnapshot,
 } from "firebase/database";
 
 export interface IRecord {
@@ -20,10 +21,11 @@ export interface IRecord {
 export interface iCalendar {
   db: Database;
   dbRef: DatabaseReference;
+  storageName:string;
 
   createRecord: (record: IRecord) => Promise<boolean>;
   updateRecord: (record: IRecord) => Promise<boolean>;
-  readRecord: (id: number) => Promise<IRecord | undefined>;
+  readRecord: (id: number) => Promise<IRecord> | undefined;
   deleteRecord: (id: number) => Promise<boolean>;
   readAll: () => Promise<IRecord[]>;
   deleteAllRecords: () => Promise<boolean>;
@@ -41,75 +43,101 @@ export namespace TasksFireBase {
 
     dbRef: DatabaseReference;
 
-    constructor(db: Database, dbRef: DatabaseReference) {
+    storageName:string;
+
+    constructor(db: Database, dbRef: DatabaseReference,storageName:string) {
       this.db = db;
       this.dbRef = dbRef;
+      this.storageName = storageName;  
     }
 
     public async createRecord(record: IRecord) {
-      let res = false;
+      let result = false;
       try {
-        let findRecord = false;
-        get(child(this.dbRef, "tasks")).then((snapshot) => {
-          if (snapshot.exists()) {
-            console.log(snapshot.val());
-            const res: IRecord[] = snapshot.val();
-            if (res[record.id] !== undefined) {
-              findRecord = true;
-            }
+
+        const snapshot:DataSnapshot = await 
+        get(child(this.dbRef, this.storageName));
+        if (snapshot.exists()) {
+          // console.log(snapshot.val());
+          const res: IRecord[] = snapshot.val();
+          if (res[record.id] === undefined) {
+            const insertRec = await
+            set(ref(this.db, this.storageName
+            .concat('/',record.id.toString())), record);
+            result = true;
           }
-        });
-
-        if (findRecord === false) {
-          set(ref(this.db, "tasks/".concat(record.id.toString())), record).then(
-            () => {
-              res = true;
-            }
-          );
         }
-
-        return res;
+        else {
+          const insertRec = await
+          set(ref(this.db, this.storageName
+          .concat('/',record.id.toString())), record);
+          result = true;         
+        }
+        return result;
       } catch (error) {
         return false;
       }
     }
 
     public async updateRecord(record: IRecord) {
+      let result = false;
       try {
-        get(child(this.dbRef, "tasks")).then((snapshot) => {
+        const snapshot:DataSnapshot = await 
+          get(child(this.dbRef, this.storageName));
           if (snapshot.exists()) {
-            console.log(snapshot.val());
+            // console.log(snapshot.val());
             const res: IRecord[] = snapshot.val();
             if (res[record.id] !== undefined) {
-              update(
-                ref(this.db, "tasks/".concat(record.id.toString())),
+              const updateRec = await update(
+                ref(this.db, this.storageName.concat('/',record.id.toString())),
                 record
               );
+              result = true;   
             }
-          }
-        });
+          }        
 
-        return true;
+        return result;
       } catch (error) {
         return false;
       }
     }
 
     public async deleteRecord(id: number) {
+      let result = false;
       try {
-        remove(ref(this.db, "tasks/".concat(id.toString())));
+        const snapshot:DataSnapshot = await 
+          get(child(this.dbRef, this.storageName));
+          if (snapshot.exists()) {
+            // console.log(snapshot.val());
+            const res: IRecord[] = snapshot.val();
+            if (res[id] !== undefined) {
+              const delRec = await remove(
+                ref(this.db, this.storageName.concat('/',id.toString()))
+                
+              );
+              result = true;  
+            }
+          }  
 
-        return true;
+        return result;
       } catch (error) {
         return false;
       }
     }
 
     public async deleteAllRecords() {
+      let result = false;
       try {
-        remove(ref(this.db, "tasks"));
+        const snapshot:DataSnapshot = await 
+        get(child(this.dbRef, this.storageName));
+        if (snapshot.exists()) {
+          const delRec = await remove(ref(this.db, this.storageName));
+          
+          result = true; 
+        }  
+        
 
-        return true;
+        return result;
       } catch (error) {
         return false;
       }
@@ -118,13 +146,12 @@ export namespace TasksFireBase {
     public async readAll() {
       let values: IRecord[] = [];
 
-      get(child(this.dbRef, "tasks")).then((snapshot) => {
-        if (snapshot.exists()) {
-          console.log(snapshot.val());
-          values = snapshot.val();
-        }
-      });
-
+      const snapshot:DataSnapshot = await 
+      get(child(this.dbRef, this.storageName));
+      if (snapshot.exists()) {
+        // console.log(snapshot.val());
+        values = snapshot.val();
+      }  
       return values;
     }
 
@@ -137,13 +164,13 @@ export namespace TasksFireBase {
         date: "",
       };
 
-      get(child(this.dbRef, "tasks")).then((snapshot) => {
+      const snapshot:DataSnapshot = await 
+      get(child(this.dbRef, this.storageName));
         if (snapshot.exists()) {
           const values: IRecord[] = snapshot.val();
           findRecord = values[id];
-          console.log(findRecord);
+          // console.log(findRecord);
         }
-      });
 
       return findRecord;
     }
@@ -156,12 +183,13 @@ export namespace TasksFireBase {
     ) {
       const values: IRecord[] = [];
 
-      get(child(this.dbRef, "tasks")).then((snapshot) => {
+      const snapshot:DataSnapshot = await 
+      get(child(this.dbRef, this.storageName));
         if (snapshot.exists()) {
-          console.log(snapshot.val());
+
           const data = snapshot.val();
           let i = 0;
-
+          
           while (i <= data.length) {
             let sourceStr = "";
             let targetStr = "";
@@ -184,7 +212,9 @@ export namespace TasksFireBase {
                 sourceStr = sourceStr.concat(item.date);
                 targetStr = targetStr.concat(date);
               }
+              
               if (sourceStr === targetStr) {
+                // console.log(sourceStr,targetStr);
                 values.push(item);
               }
             }
@@ -192,7 +222,6 @@ export namespace TasksFireBase {
             i++;
           }
         }
-      });
 
       return values;
     }

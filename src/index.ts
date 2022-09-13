@@ -35,11 +35,13 @@ const db: Database = getDatabase();
 
 const dbRef: DatabaseReference = ref(getDatabase());
 
-const calendar = new TasksFireBase.Calendar(db, dbRef);
-const clearAll = await calendar.deleteAllRecords();
-console.log(clearAll);
-const findRecord = await calendar.readRecord(1);
-console.log(findRecord);
+const calendar = new TasksFireBase.Calendar(db, dbRef,'calendar');
+const calendar1 = new TasksFireBase.Calendar(db, dbRef,'calendar1');
+
+const delAll = await calendar.deleteAllRecords();
+const delAll1 = await calendar1.deleteAllRecords();
+
+
 
 let createRecord = await calendar.createRecord({
   id: 0,
@@ -59,14 +61,25 @@ createRecord = await calendar.createRecord({
 });
 console.log(createRecord);
 
-createRecord = await calendar.updateRecord({
-  id: 1,
-  toDo: "Task11",
-  status: "Progress1",
+
+
+createRecord = await calendar1.createRecord({
+  id: 0,
+  toDo: "Task0",
+  status: "Progress",
   tag: "Tasks",
   date: "31.08.2022",
 });
 console.log(createRecord);
+
+ createRecord = await calendar.updateRecord({
+   id: 1,
+   toDo: "Task11",
+   status: "Progress1",
+   tag: "Tasks",
+   date: "31.08.2022",
+ });
+ console.log(createRecord);
 
 createRecord = await calendar.deleteRecord(0);
 console.log(createRecord);
@@ -89,7 +102,13 @@ createRecord = await calendar.createRecord({
 });
 console.log(createRecord);
 
-const findRecords = await calendar.filterRecords("Task0", "Progress", "", "");
+const allRecords = await calendar.readAll();
+console.log(allRecords);
+
+const findRecord = await calendar.readRecord(1);
+console.log(findRecord);
+
+const findRecords = await calendar.filterRecords("Task11", "", "", "");
 console.log(findRecords);
 const findRecords1 = await calendar.filterRecords("", "", "", "31.08.2022");
 console.log(findRecords1);
